@@ -4,7 +4,7 @@ from .models import Category, Location, Post
 
 
 class PostAdmin (admin.ModelAdmin):
-    list_display=[
+    list_display = [
         'title',
         'pub_date',
         'text',
@@ -12,9 +12,10 @@ class PostAdmin (admin.ModelAdmin):
         'location',
         'category',
         'is_published'
-        ]
-    list_filter=['is_published']
-    search_fields=['title']
+    ]
+    list_filter = ['is_published']
+    search_fields = ['title']
+
 
 admin.site.register(Category)
 admin.site.register(Location)

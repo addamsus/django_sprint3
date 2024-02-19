@@ -1,49 +1,52 @@
 from django.shortcuts import render
-from django.http import Http404
+from django.shortcuts import get_object_or_404
+# from django.http import Http404
 from django.utils import timezone
 
 from .models import Category, Post
 
 RELATED_POSTS_LEN = 5
 
-def index(request):
-    post_list = Post.objects.select_related(
-        'category',
-        'author',
-        'location'
-        ).filter(
+
+def get_published_posts(*args, **kwargs):
+    return Post.objects.select_related('category').filter(
         is_published=True,
         pub_date__lte=timezone.now(),
         category__is_published=True,
-    ).order_by('-pub_date')[:RELATED_POSTS_LEN]
+        **kwargs
+    ).order_by('-pub_date')
+
+
+def index(request):
+    post_list = get_published_posts()[:RELATED_POSTS_LEN]
     return render(request, 'blog/index.html', context={'post_list': post_list})
 
 
 def post_detail(request, post_id):
-    template_name = 'blog/detail.html'
-    try:
-        post = Post.objects.select_related('category').get(id=post_id)
-    except Post.DoesNotExist:
-        raise Http404('Такого поста не существует.')
-    if (
-        post.pub_date > timezone.now()
-        or not post.is_published
-        or not post.category.is_published
-    ):
-        raise Http404('Пост не найден.')
+    post = get_object_or_404(
+        Post,
+        pk=post_id,
+        pub_date__lte=timezone.now(),
+        is_published=True,
+        category__is_published=True,
+    )
     return render(
         request,
-        template_name, context={'post': post}
+        'blog/detail.html', context={'post': post}
     )
 
 
 def category_posts(request, category_slug):
-    template_name = 'blog/category.html'
-    if not Category.objects.get(slug=category_slug).is_published:
-        raise Http404('Категория не найдена.')
-    post_list = Post.objects.select_related('category').filter(
-        is_published=True,
-        pub_date__lte=timezone.now(),
-        category__slug=category_slug,
+    category = get_object_or_404(
+        Category,
+        slug=category_slug,
+        is_published=True
     )
-    return render(request, template_name, context={'post_list': post_list})
+    post_list = get_published_posts(
+        category=category
+    )
+    return render(
+        request,
+        'blog/category.html',
+        context={'post_list': post_list}
+    )
