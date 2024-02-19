@@ -1,12 +1,25 @@
-from django.db import models
-
 from django.contrib.auth import get_user_model
+from django.db import models
 
 
 User = get_user_model()
 
 
-class Category(models.Model):
+class BaseModel(models.Model):
+    is_published = models.BooleanField(
+        'Опубликовано',
+        default=True,
+        help_text=('Снимите галочку, чтобы скрыть публикацию.')
+    )
+    created_at = models.DateTimeField(
+        'Добавлено',
+        auto_now_add=True,
+    )
+    class Meta:
+        abstract=True
+
+
+class Category(BaseModel):
     title = models.CharField(
         'Заголовок',
         max_length=256,
@@ -21,49 +34,49 @@ class Category(models.Model):
                    'разрешены символы латиницы, цифры, '
                    'дефис и подчёркивание.')
     )
-    is_published = models.BooleanField(
-        'Опубликовано',
-        default=True,
-        help_text=('Снимите галочку, чтобы скрыть публикацию.')
-    )
-    created_at = models.DateTimeField(
-        'Добавлено',
-        auto_now_add=True,
-    )
+    # is_published = models.BooleanField(
+    #     'Опубликовано',
+    #     default=True,
+    #     help_text=('Снимите галочку, чтобы скрыть публикацию.')
+    # )
+    # created_at = models.DateTimeField(
+    #     'Добавлено',
+    #     auto_now_add=True,
+    # )
 
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
-    def __str__(self):
-        return self.title
+    def __str__(self)-> str:
+        return self.title[:30]
 
 
-class Location(models.Model):
+class Location(BaseModel):
     name = models.CharField(
         'Название места',
         max_length=256,
     )
 
-    is_published = models.BooleanField(
-        'Опубликовано',
-        default=True,
-        help_text=('Снимите галочку, чтобы скрыть публикацию.')
-    )
-    created_at = models.DateTimeField(
-        'Добавлено',
-        auto_now_add=True,
-    )
+    # is_published = models.BooleanField(
+    #     'Опубликовано',
+    #     default=True,
+    #     help_text=('Снимите галочку, чтобы скрыть публикацию.')
+    # )
+    # created_at = models.DateTimeField(
+    #     'Добавлено',
+    #     auto_now_add=True,
+    # )
 
     class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
-    def __str__(self):
-        return self.name
+    def __str__(self)-> str:
+        return self.name[:30]
 
 
-class Post(models.Model):
+class Post(BaseModel):
     title = models.CharField(
         'Заголовок',
         max_length=256,
@@ -99,19 +112,19 @@ class Post(models.Model):
         related_name='posts',
     )
 
-    is_published = models.BooleanField(
-        'Опубликовано',
-        default=True,
-        help_text=('Снимите галочку, чтобы скрыть публикацию.')
-    )
-    created_at = models.DateTimeField(
-        'Добавлено',
-        auto_now_add=True,
-    )
+    # is_published = models.BooleanField(
+    #     'Опубликовано',
+    #     default=True,
+    #     help_text=('Снимите галочку, чтобы скрыть публикацию.')
+    # )
+    # created_at = models.DateTimeField(
+    #     'Добавлено',
+    #     auto_now_add=True,
+    # )
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
 
-    def __str__(self):
-        return self.title
+    def __str__(self)-> str:
+        return self.title[:30]

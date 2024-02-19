@@ -1,19 +1,22 @@
 from django.shortcuts import render
 from django.http import Http404
 from django.utils import timezone
-from datetime import datetime
 
 from .models import Category, Post
 
+RELATED_POSTS_LEN = 5
 
 def index(request):
-    template_name = 'blog/index.html'
-    post_list = Post.objects.select_related('category').filter(
+    post_list = Post.objects.select_related(
+        'category',
+        'author',
+        'location'
+        ).filter(
         is_published=True,
-        pub_date__lte=datetime.now(),
+        pub_date__lte=timezone.now(),
         category__is_published=True,
-    ).order_by('-pub_date')[:5]
-    return render(request, template_name, context={'post_list': post_list})
+    ).order_by('-pub_date')[:RELATED_POSTS_LEN]
+    return render(request, 'blog/index.html', context={'post_list': post_list})
 
 
 def post_detail(request, post_id):
@@ -40,7 +43,7 @@ def category_posts(request, category_slug):
         raise Http404('Категория не найдена.')
     post_list = Post.objects.select_related('category').filter(
         is_published=True,
-        pub_date__lte=datetime.now(),
+        pub_date__lte=timezone.now(),
         category__slug=category_slug,
     )
     return render(request, template_name, context={'post_list': post_list})
