@@ -26,11 +26,8 @@ def index(request):
 
 def post_detail(request, post_id):
     post = get_object_or_404(
-        Post,
+        get_published_posts(),
         pk=post_id,
-        pub_date__lte=timezone.now(),
-        is_published=True,
-        category__is_published=True,
     )
     return render(
         request,
