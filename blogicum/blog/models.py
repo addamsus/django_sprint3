@@ -4,8 +4,10 @@ from django.db import models
 
 User = get_user_model()
 
+TEXT_LIMIT_LEN = 30
 
-class BaseModel(models.Model):
+
+class PublishedModel(models.Model):
     is_published = models.BooleanField(
         'Опубликовано',
         default=True,
@@ -20,7 +22,7 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Category(BaseModel):
+class Category(PublishedModel):
     title = models.CharField(
         'Заголовок',
         max_length=256,
@@ -41,10 +43,10 @@ class Category(BaseModel):
         verbose_name_plural = 'Категории'
 
     def __str__(self) -> str:
-        return self.title[:30]
+        return self.title[:TEXT_LIMIT_LEN]
 
 
-class Location(BaseModel):
+class Location(PublishedModel):
     name = models.CharField(
         'Название места',
         max_length=256,
@@ -55,10 +57,10 @@ class Location(BaseModel):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self) -> str:
-        return self.name[:30]
+        return self.name[:TEXT_LIMIT_LEN]
 
 
-class Post(BaseModel):
+class Post(PublishedModel):
     title = models.CharField(
         'Заголовок',
         max_length=256,
@@ -99,4 +101,4 @@ class Post(BaseModel):
         verbose_name_plural = 'Публикации'
 
     def __str__(self) -> str:
-        return self.title[:30]
+        return self.title[:TEXT_LIMIT_LEN]

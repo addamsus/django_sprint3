@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from .models import Category, Post
@@ -8,7 +7,11 @@ RELATED_POSTS_LEN = 5
 
 
 def get_published_posts(*args, **kwargs):
-    return Post.objects.select_related('category').filter(
+    return Post.objects.select_related(
+        'category',
+        'author',
+        'location'
+    ).filter(
         is_published=True,
         pub_date__lte=timezone.now(),
         category__is_published=True,
